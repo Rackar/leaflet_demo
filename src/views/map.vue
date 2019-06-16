@@ -41,17 +41,16 @@ export default {
 
   methods: {
     getPoints() {
-      var that = this;
       this.$axios.get("http://123.206.94.184:3000/gps").then(lists => {
-        debugger;
-        let cluster = that.$utils.map.createMakerCluster();
+        // debugger;
+        let cluster = this.$utils.map.createMakerCluster();
         for (let single of lists.data.data) {
-          let mark = that.$utils.map.createMakerByLatlng(
+          let mark = this.$utils.map.createMakerByLatlng(
             $L.latLng(parseFloat(single.lat), parseFloat(single.long))
           );
           cluster.addLayer(mark);
         }
-        that.map.addLayer(cluster);
+        this.map.addLayer(cluster);
       });
     },
     zoomIn() {
