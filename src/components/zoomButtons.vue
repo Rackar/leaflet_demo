@@ -4,13 +4,14 @@
       <li @click="$emit('zoomIn')">+</li>
       <li @click="$emit('resetMap')">·</li>
       <li @click="$emit('zoomOut')">-</li>
+      <li @click="$emit('getPos')">v</li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
-    name: "zoomButtons"
+  name: "zoomButtons"
 };
 </script>
 <style lang="scss">

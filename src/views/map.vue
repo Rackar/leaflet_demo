@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="map-container" id="map-container"></div>
-    <zoomButtons @zoomIn="zoomIn" @zoomOut="zoomOut" @resetMap="resetMap"></zoomButtons>
+    <zoomButtons @zoomIn="zoomIn" @zoomOut="zoomOut" @resetMap="resetMap" @getPos="getPos"></zoomButtons>
   </div>
 </template>
 
@@ -28,19 +28,32 @@ export default {
 
     // 设施地图视图 中心位置
     this.map.setView([41.105, 116], 8);
-
-    ///点聚合测试
-    let cluster = this.$utils.map.createMakerCluster();
-    for (let i = 0; i < 5000; i++) {
-      let latlng = this.$utils.map.getRandomLatLng(this.map);
-      let maker = this.$utils.map.createMakerByLatlng(latlng);
-      cluster.addLayer(maker);
-    }
-
-    this.map.addLayer(cluster);
+    this.getPoints();
+    // ///点聚合测试
+    // let cluster = this.$utils.map.createMakerCluster();
+    // for (let i = 0; i < 5000; i++) {
+    //   let latlng = this.$utils.map.getRandomLatLng(this.map);
+    //   let maker = this.$utils.map.createMakerByLatlng(latlng);
+    //   cluster.addLayer(maker);
+    // }
+    // this.map.addLayer(cluster);
   },
 
   methods: {
+    getPoints() {
+      var that = this;
+      this.$axios.get("http://123.206.94.184:3000/gps").then(lists => {
+        debugger;
+        let cluster = that.$utils.map.createMakerCluster();
+        for (let single of lists.data.data) {
+          let mark = that.$utils.map.createMakerByLatlng(
+            $L.latLng(parseFloat(single.lat), parseFloat(single.long))
+          );
+          cluster.addLayer(mark);
+        }
+        that.map.addLayer(cluster);
+      });
+    },
     zoomIn() {
       this.map.zoomIn();
     },
@@ -51,6 +64,23 @@ export default {
       this.map.setView([41.105, 116], 8);
       //   this.map.flyTo([41.105, 116], 8);
       //     this.map.panTo([41.105, 116]);
+    },
+    getPos() {
+      debugger;
+      this.$utils.navi.getPos(this.showPos, this.fb);
+      // navigator.geolocation.getCurrentPosition(this.showPos, this.fb);
+    },
+    showPos(pos) {
+      debugger;
+      console.log(pos.coords);
+      var posi = this.$utils.map.createMakerByLatlng(
+        $L.latLng(pos.coords.latitude, pos.coords.longitude)
+      );
+      this.map.addLayer(posi);
+    },
+    fb(err) {
+      debugger;
+      console.log(err);
     }
   }
 };
