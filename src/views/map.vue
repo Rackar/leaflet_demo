@@ -8,7 +8,7 @@
 <script>
 import zoomButtons from "../components/zoomButtons";
 import $L from "leaflet";
-import { MarkerClusterGroup } from "leaflet.markercluster";
+// import { MarkerClusterGroup } from "leaflet.markercluster";
 export default {
   //   name: "map",
   components: { zoomButtons },
@@ -22,14 +22,22 @@ export default {
     this.map = this.$utils.map.createMap("map-container", {
       zoomControl: false
     });
+    this.map._layersMaxZoom = 19;
     // 加载 open street map 图层服务
     this.$utils.map.createTileLayer(this.map, this.OSMUrl, {});
 
     // 设施地图视图 中心位置
     this.map.setView([41.105, 116], 8);
-    // var markers = MarkerClusterGroup();
-    // this.$utils.map.createCLS(this.map);
-    var markers = $L.MarkerClusterGroup();
+
+    ///点聚合测试
+    let cluster = this.$utils.map.createMakerCluster();
+    for (let i = 0; i < 5000; i++) {
+      let latlng = this.$utils.map.getRandomLatLng(this.map);
+      let maker = this.$utils.map.createMakerByLatlng(latlng);
+      cluster.addLayer(maker);
+    }
+
+    this.map.addLayer(cluster);
   },
 
   methods: {
