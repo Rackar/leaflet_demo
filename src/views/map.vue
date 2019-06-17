@@ -162,6 +162,14 @@ export default {
 };
 </script>
 <style lang="scss">
+//去除logo信息
+#map-container {
+  .leaflet-control-attribution.leaflet-control {
+    a {
+      display: none;
+    }
+  }
+}
 .map-container {
   position: absolute;
   left: 0;
