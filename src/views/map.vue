@@ -3,7 +3,7 @@
     <div class="map-container" id="map-container"></div>
     <zoomButtons @zoomIn="zoomIn" @zoomOut="zoomOut" @resetMap="resetMap" @getPos="getPos"></zoomButtons>
     <div class="optionsBar">
-      <md-button type="small" icon="edit" inline @click="showPopUp('right')">清单</md-button>
+      <md-button type="small" icon="edit" inline @click="showPopUp('right')">点位列表</md-button>
     </div>
     <md-popup v-model="isPopupShow.right" position="right" class="detailLists" :hasMask="false">
       <div class="warper">
@@ -107,7 +107,7 @@ export default {
           this.isFinished = true;
         }
         this.$refs.scrollView.finishLoadMore();
-      }, 200);
+      }, 50);
     },
     showPopUp(type) {
       this.$set(this.isPopupShow, type, true);
@@ -142,16 +142,17 @@ export default {
       //     this.map.panTo([41.105, 116]);
     },
     getPos() {
-      debugger;
+      // debugger;
       this.$utils.navi.getPos(this.showPos, this.fb);
       // navigator.geolocation.getCurrentPosition(this.showPos, this.fb);
     },
     showPos(pos) {
-      debugger;
-      console.log(pos.coords);
+      // debugger;
+      console.log(pos);
       var posi = this.$utils.map.createMakerByLatlng(
         $L.latLng(pos.coords.latitude, pos.coords.longitude)
       );
+      this.map.flyTo($L.latLng(pos.coords.latitude, pos.coords.longitude));
       this.map.addLayer(posi);
     },
     fb(err) {
@@ -196,7 +197,17 @@ export default {
       }
     }
     .scrollBar {
-      height: 600px;
+      height: 400px;
+      table {
+        // border: 1px grey solid;
+        tr {
+          margin: 0;
+        }
+        td {
+          margin: 0;
+          border: 1px grey solid;
+        }
+      }
     }
   }
   // background: white;

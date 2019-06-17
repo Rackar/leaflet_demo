@@ -1,10 +1,18 @@
 <template>
   <div class="map-navigation">
     <ul>
-      <li @click="$emit('zoomIn')">+</li>
-      <li @click="$emit('resetMap')">·</li>
-      <li @click="$emit('zoomOut')">-</li>
-      <li @click="$emit('getPos')">v</li>
+      <li @click="$emit('zoomIn')">
+        <md-icon name="arrow-up " size="xs"></md-icon>
+      </li>
+      <li @click="$emit('resetMap')">
+        <md-icon name="refresh" size="xs"></md-icon>
+      </li>
+      <li @click="$emit('zoomOut')">
+        <md-icon name="arrow-down" size="xs"></md-icon>
+      </li>
+      <li @click="$emit('getPos')">
+        <md-icon name="location" size="xs"></md-icon>
+      </li>
     </ul>
   </div>
 </template>
