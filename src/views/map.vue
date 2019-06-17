@@ -2,6 +2,53 @@
   <div>
     <div class="map-container" id="map-container"></div>
     <zoomButtons @zoomIn="zoomIn" @zoomOut="zoomOut" @resetMap="resetMap" @getPos="getPos"></zoomButtons>
+    <div class="optionsBar">
+      <md-button type="small" icon="edit" inline @click="showPopUp('right')">清单</md-button>
+    </div>
+    <md-popup v-model="isPopupShow.right" position="right" class="detailLists" :hasMask="false">
+      <div class="warper">
+        <div class="closebutton" @click="hidePopUp('right')">
+          关闭
+          <md-icon name="close"></md-icon>
+        </div>
+
+        <md-scroll-view
+          class="scrollBar"
+          ref="scrollView"
+          :scrolling-x="false"
+          @endReached="$_onEndReached"
+        >
+          <!-- <div v-for="(i,index) in pagedList" :key="i.id" class="scroll-view-list">
+            <p class="scroll-view-item">
+              {{index+1}}-{{i.long}},{{i.lat}},{{i.time}}
+              <br>
+              东{{i.x}},北{{i.y}}
+            </p>
+          </div>-->
+          <table>
+            <tr>
+              <th>序号</th>
+              <th>经纬度</th>
+              <th>平面坐标</th>
+            </tr>
+            <template v-for="(i,index) in pagedList">
+              <tr>
+                <td rowspan="2">{{index+1}}</td>
+                <td>{{i.long}}</td>
+                <td>{{i.x}}</td>
+              </tr>
+              <tr>
+                <td>{{i.lat}}</td>
+
+                <td>{{i.y}}</td>
+              </tr>
+            </template>
+          </table>
+
+          <md-scroll-view-more slot="more" :is-finished="isFinished"></md-scroll-view-more>
+        </md-scroll-view>
+      </div>
+    </md-popup>
   </div>
 </template>
 
@@ -15,7 +62,13 @@ export default {
   data() {
     return {
       map: null,
-      OSMUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      OSMUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      list: 10,
+      isFinished: false,
+      isPopupShow: {},
+      pointLists: [],
+      page: 0,
+      pagedList: []
     };
   },
   mounted() {
@@ -27,7 +80,7 @@ export default {
     this.$utils.map.createTileLayer(this.map, this.OSMUrl, {});
 
     // 设施地图视图 中心位置
-    this.map.setView([41.105, 116], 8);
+    this.map.setView([41.105, 111], 8);
     this.getPoints();
     // ///点聚合测试
     // let cluster = this.$utils.map.createMakerCluster();
@@ -40,9 +93,33 @@ export default {
   },
 
   methods: {
+    $_onEndReached() {
+      if (this.isFinished) {
+        return;
+      }
+      // async data
+      setTimeout(() => {
+        var count = 10;
+        this.page += 1;
+        this.pagedList = this.pointLists.slice(0, (this.page + 1) * count);
+
+        if ((this.page + 1) * count >= this.pointLists.length) {
+          this.isFinished = true;
+        }
+        this.$refs.scrollView.finishLoadMore();
+      }, 200);
+    },
+    showPopUp(type) {
+      this.$set(this.isPopupShow, type, true);
+    },
+    hidePopUp(type) {
+      this.$set(this.isPopupShow, type, false);
+    },
     getPoints() {
       this.$axios.get("http://123.206.94.184:3000/gps").then(lists => {
         // debugger;
+        this.pointLists = lists.data.data.reverse();
+        this.pagedList = this.pointLists.slice(0, 10);
         let cluster = this.$utils.map.createMakerCluster();
         for (let single of lists.data.data) {
           let mark = this.$utils.map.createMakerByLatlng(
@@ -60,7 +137,7 @@ export default {
       this.map.zoomOut();
     },
     resetMap() {
-      this.map.setView([41.105, 116], 8);
+      this.map.setView([41.105, 111], 8);
       //   this.map.flyTo([41.105, 116], 8);
       //     this.map.panTo([41.105, 116]);
     },
@@ -91,6 +168,30 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
+}
+.optionsBar {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  z-index: 1000;
+  .md-button {
+    // width: 40px;
+    // height: 50px;
+  }
+}
+.detailLists {
+  .warper {
+    background: white;
+    .closebutton {
+      &:hover {
+        background: rgb(197, 191, 191);
+      }
+    }
+    .scrollBar {
+      height: 600px;
+    }
+  }
+  // background: white;
 }
 </style>
 
