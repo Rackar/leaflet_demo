@@ -116,7 +116,7 @@ export default {
       this.$set(this.isPopupShow, type, false);
     },
     getPoints() {
-      this.$axios.get("http://123.206.94.184:3000/gps").then(lists => {
+      this.$axios.get("https://www.codingyang.com:3001/gps").then(lists => {
         // debugger;
         this.pointLists = lists.data.data.reverse();
         this.pagedList = this.pointLists.slice(0, 10);
