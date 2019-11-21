@@ -8,7 +8,10 @@ import store from "./store";
 import "./registerServiceWorker";
 import utils from "./utility";
 import axios from "axios";
+import Vant from "vant";
+import "vant/lib/index.css";
 
+Vue.use(Vant);
 //为解决safari中的bug引入fastclick
 import FastClick from "fastclick";
 if ("addEventListener" in document && "ontouchstart" in window) {
@@ -23,7 +26,7 @@ if ("addEventListener" in document && "ontouchstart" in window) {
     false
   );
 }
-//全局引入mand
+// 全局引入mand;
 import mandMobile from "mand-mobile";
 import "mand-mobile/lib/mand-mobile.css";
 Vue.use(mandMobile);

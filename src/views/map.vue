@@ -1,11 +1,24 @@
 <template>
   <div>
     <div class="map-container" id="map-container"></div>
-    <zoomButtons @zoomIn="zoomIn" @zoomOut="zoomOut" @resetMap="resetMap" @getPos="getPos"></zoomButtons>
+    <zoomButtons
+      @zoomIn="zoomIn"
+      @zoomOut="zoomOut"
+      @resetMap="resetMap"
+      @getPos="getPos"
+    ></zoomButtons>
     <div class="optionsBar">
-      <md-button type="small" icon="edit" inline @click="showPopUp('right')">点位列表</md-button>
+      <button @click="addPoint">加点</button>
+      <md-button type="small" icon="edit" inline @click="showPopUp('right')"
+        >点位列表</md-button
+      >
     </div>
-    <md-popup v-model="isPopupShow.right" position="right" class="detailLists" :hasMask="false">
+    <md-popup
+      v-model="isPopupShow.right"
+      position="right"
+      class="detailLists"
+      :hasMask="false"
+    >
       <div class="warper">
         <div class="closebutton" @click="hidePopUp('right')">
           关闭
@@ -31,21 +44,24 @@
               <th>经纬度</th>
               <th>平面坐标</th>
             </tr>
-            <template v-for="(i,index) in pagedList">
+            <template v-for="(i, index) in pagedList">
               <tr>
-                <td rowspan="2">{{index+1}}</td>
-                <td>{{i.long}}</td>
-                <td>{{i.x}}</td>
+                <td rowspan="2">{{ index + 1 }}</td>
+                <td>{{ i.long }}</td>
+                <td>{{ i.x }}</td>
               </tr>
               <tr>
-                <td>{{i.lat}}</td>
+                <td>{{ i.lat }}</td>
 
-                <td>{{i.y}}</td>
+                <td>{{ i.y }}</td>
               </tr>
             </template>
           </table>
 
-          <md-scroll-view-more slot="more" :is-finished="isFinished"></md-scroll-view-more>
+          <md-scroll-view-more
+            slot="more"
+            :is-finished="isFinished"
+          ></md-scroll-view-more>
         </md-scroll-view>
       </div>
     </md-popup>
@@ -76,15 +92,23 @@ export default {
       zoomControl: false
     });
     this.map._layersMaxZoom = 19;
+    this.$utils.map.chinaProvider(
+      "GaoDe.Normal.Map",
+      {
+        maxZoom: 18,
+        minZoom: 5
+      },
+      this.map
+    );
     // 加载 open street map 图层服务
-    this.$utils.map.createTileLayer(this.map, this.OSMUrl, {});
+    // this.$utils.map.createTileLayer(this.map, this.OSMUrl, {});
 
     // 设施地图视图 中心位置
     this.map.setView([41.105, 111], 8);
-    this.getPoints();
+    // this.getPoints();
     // ///点聚合测试
     // let cluster = this.$utils.map.createMakerCluster();
-    // for (let i = 0; i < 5000; i++) {
+    // for (let i = 0; i < 1000; i++) {
     //   let latlng = this.$utils.map.getRandomLatLng(this.map);
     //   let maker = this.$utils.map.createMakerByLatlng(latlng);
     //   cluster.addLayer(maker);
@@ -128,6 +152,14 @@ export default {
           cluster.addLayer(mark);
         }
         this.map.addLayer(cluster);
+      });
+    },
+    addPoint() {
+      // $L.marker([40, 111]).addTo(this.map);
+
+      this.map.on("click", e => {
+        console.log(e);
+        $L.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
       });
     },
     zoomIn() {
@@ -213,4 +245,3 @@ export default {
   // background: white;
 }
 </style>
-
